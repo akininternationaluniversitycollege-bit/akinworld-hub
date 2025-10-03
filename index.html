@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akinworld Hub</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+    header { background: #333; color: white; padding: 15px; text-align: center; }
+    nav { background: #444; padding: 10px; text-align: center; }
+    nav a { color: white; margin: 0 10px; text-decoration: none; }
+    section { padding: 20px; }
+    footer { background: #333; color: white; text-align: center; padding: 10px; position: fixed; width: 100%; bottom: 0; }
+
+    /* Chat UI */
+    #chatContainer { background: #fff; padding: 10px; border: 1px solid #ccc; height: 300px; overflow-y: auto; margin-bottom: 10px; }
+    .message { margin: 5px; padding: 10px; border-radius: 8px; }
+    .user-message { background: #d1e7dd; text-align: right; }
+    .ai-message { background: #e2e3e5; text-align: left; }
+    #userInput { width: 80%; padding: 8px; }
+    #sendBtn { padding: 8px 12px; }
+    #typingIndicator { display: none; color: gray; font-style: italic; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌍 Akinworld Hub</h1>
+  <p>Portfolio | Contact | AI Assistant</p>
+</header>
+
+<nav>
+  <a href="#portfolio">Portfolio</a>
+  <a href="#contact">Contact</a>
+  <a href="#assistant">AI Assistant</a>
+</nav>
+
+<section id="portfolio">
+  <h2>Portfolio</h2>
+  <p>Showcase your projects here 🚀</p>
+  <ul>
+    <li>🌟 Project 1 – Description</li>
+    <li>🌟 Project 2 – Description</li>
+    <li>🌟 Project 3 – Description</li>
+  </ul>
+</section>
+
+<section id="contact">
+  <h2>Contact</h2>
+  <form>
+    <label>Name:</label><br>
+    <input type="text" name="name" required><br><br>
+    <label>Email:</label><br>
+    <input type="email" name="email" required><br><br>
+    <label>Message:</label><br>
+    <textarea name="message" required></textarea><br><br>
+    <button type="submit">Send</button>
+  </form>
+</section>
+
+<section id="assistant">
+  <h2>AI Assistant 🤖</h2>
+  <div id="chatContainer"></div>
+  <div id="typingIndicator">AI is typing...</div>
+  <input type="text" id="userInput" placeholder="Ask me anything...">
+  <button id="sendBtn">Send</button>
+</section>
+
+<footer>
+  <p>&copy; 2025 Akinworld Hub</p>
+</footer>
+
+<script>
+const chatContainer = document.getElementById("chatContainer");
+const userInput = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+const typingIndicator = document.getElementById("typingIndicator");
+
+async function sendMessage() {
+  const message = userInput.value.trim();
+  if (!message) return;
+
+  // User message
+  const userMsg = document.createElement("div");
+  userMsg.className = "message user-message";
+  userMsg.innerText = message;
+  chatContainer.appendChild(userMsg);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+
+  userInput.value = "";
+
+  typingIndicator.style.display = "block";
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+    const data = await res.json();
+
+    typingIndicator.style.display = "none";
+
+    const aiMsg = document.createElement("div");
+    aiMsg.className = "message ai-message";
+    aiMsg.innerText = data.reply || "Sorry, no response.";
+    chatContainer.appendChild(aiMsg);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  } catch (err) {
+    typingIndicator.style.display = "none";
+    console.error(err);
+  }
+}
+
+sendBtn.addEventListener("click", sendMessage);
+userInput.addEventListener("keypress", e => {
+  if (e.key === "Enter") sendMessage();
+});
+</script>
+
+</body>
+</html>
